@@ -1,11 +1,16 @@
-const gallery = document.getElementById("gallery");
 const body = document.querySelector("body");
+const gallery = document.getElementById("gallery");
 let modalContainer;
-
 let employees = [];
 
+// Random employees API -> return a list of 12 employees, and only in the English alphabet
 const url = "https://randomuser.me/api/?nat=us&results=12";
 
+// FUNCTIONS
+
+// API request
+// Get data from url and store as an array of objects in employees variable
+// Call displayEmployees func to dynamically display employees on the DOM
 function getEmployeesData(url) {
   fetch(url)
     .then((res) => res.json())
@@ -16,6 +21,7 @@ function getEmployeesData(url) {
     .catch((err) => console.log(err));
 }
 
+// Displays employees on the DOM
 function displayEmployees(data) {
   const galleryHTML = data
     .map(
@@ -36,21 +42,26 @@ function displayEmployees(data) {
   gallery.insertAdjacentHTML("beforeend", galleryHTML);
 }
 
+// Display modal container with selected employee info
 function showModal(employee) {
   function normalize(phone) {
-    //normalize string and remove all unnecessary characters
+    // normalize string and remove all unnecessary characters
     phone = phone.replace(/[^\d]/g, "");
 
-    //check if number length equals to 10
+    // check if number length equals to 10
     if (phone.length == 10) {
-      //reformat and return phone number
+      // reformat and return phone number
       return phone.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
     }
     return phone;
   }
 
+  const employeeName = employee.name.first + " " + employee.name.last;
   const birthday = new Date(employee.dob.date);
-
+  const employeeBirthday = `${
+    birthday.getMonth() + 1
+  }/${birthday.getDay()}/${birthday.getYear()}`;
+  const employeeAddress = `${employee.location.street.number} ${employee.location.street.name}, ${employee.location.city}, ${employee.location.state} ${employee.location.postcode}`;
   const modalHTML = `
         <div class="modal-container">
             <div class="modal">
@@ -58,22 +69,14 @@ function showModal(employee) {
                 <div class="modal-info-container">
                     <img class="modal-img" src="${
                       employee.picture.thumbnail
-                    }" alt="${employee.name.first} ${employee.name.last}">
-                    <h3 id="name" class="modal-name cap">${
-                      employee.name.first
-                    } ${employee.name.last}</h3>
+                    }" alt="${employeeName}">
+                    <h3 id="name" class="modal-name cap">${employeeName}</h3>
                     <p class="modal-text">${employee.email}</p>
                     <p class="modal-text cap">${employee.location.city}</p>
                     <hr>
                     <p class="modal-text">${normalize(employee.cell)}</p>
-                    <p class="modal-text">${employee.location.street.number} ${
-    employee.location.street.name
-  }, ${employee.location.city}, ${employee.location.state} ${
-    employee.location.postcode
-  }</p>
-                    <p class="modal-text">Birthday: ${
-                      birthday.getMonth() + 1
-                    }/${birthday.getDay()}/${birthday.getYear()}</p>
+                    <p class="modal-text">${employeeAddress}</p>
+                    <p class="modal-text">Birthday: ${employeeBirthday}</p>
                 </div>
             </div>
 
@@ -83,15 +86,15 @@ function showModal(employee) {
             </div>
         </div>
     `;
+
   body.insertAdjacentHTML("beforeend", modalHTML);
 
   modalContainer = document.querySelector(".modal-container");
 }
 
-/*
- * EVENT LISTENERS
- */
+// EVENT LISTENERS
 
+// Display search bar on page load
 window.onload = () => {
   const searchHTML = `
         <form action="#" method="get">
@@ -102,7 +105,7 @@ window.onload = () => {
   document.querySelector(".search-container").innerHTML = searchHTML;
 };
 
-//search input
+// Search input on keyup and shows only results that match users input
 body.addEventListener("keyup", (e) => {
   if (e.target.closest("#search-input")) {
     let currentValue = e.target.value.toLowerCase();
@@ -117,7 +120,7 @@ body.addEventListener("keyup", (e) => {
   }
 });
 
-//show modal on card click
+// Show modal on card click
 gallery.addEventListener("click", (e) => {
   const card = e.target.closest(".card");
   const nameCard = card.querySelector("#name").textContent;
@@ -129,10 +132,8 @@ gallery.addEventListener("click", (e) => {
   showModal(employee);
 });
 
-/*
- * modal next and prev button handlers
- * modal close on close button and outside card click
- */
+// Modal next and prev button handlers
+// Modal close on close button or outside card click
 body.addEventListener("click", (e) => {
   const nameModal = modalContainer.querySelector("#name").textContent;
   const employee = employees.find(
@@ -140,11 +141,13 @@ body.addEventListener("click", (e) => {
   );
 
   if (e.target.closest("#modal-next")) {
+    // if current employee is not the last on the list, show next
     if (employees.indexOf(employee) < employees.length - 1) {
       modalContainer.remove();
       showModal(employees[employees.indexOf(employee) + 1]);
     }
   } else if (e.target.closest("#modal-prev")) {
+    // if current employee is not the first on the list, show previous
     if (employees.indexOf(employee) > 0) {
       modalContainer.remove();
       showModal(employees[employees.indexOf(employee) - 1]);
@@ -160,4 +163,5 @@ body.addEventListener("click", (e) => {
   }
 });
 
+// Call function to retrieve data from the API
 getEmployeesData(url);
