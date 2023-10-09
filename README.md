@@ -6,7 +6,7 @@
 
 ### Aditional functionality
 
-Next and previous button added to toggle thru employees list.
+Using only Vanilla JavaScripts, I added the div to the DOM, and builtd functionality for the "PREV" and "NEXT" buttons added to toggle thru employees list.
 
 I also changed some styling:
 - Imported different font-family from Google Fonts and applied for the whole project.
@@ -23,7 +23,8 @@ I also changed some styling:
 
 This project is part of the curriculum for Treehouse's Full Stack JavaScript Techdegree.
 
-Using the supplied HTML and CSS files, I built an app for a fictional company called Awesome Startup, a distributed company with remote employees working all over the world. They need a smart way for employees to share contact information with each other.
+Using the supplied HTML and CSS files, I built an app for a fictional company called Awesome Startup, a distributed company with remote employees working all over the world.
+Using only JavaScript, I dynamically inserted the employees gallery html, after fetching the data. And dynamically added the modal html to dysplay employee detailed info.
 
 I used the Random User Generator API (https://randomuser.me/) to grab information for 12 random “employees,” and used that data to build a prototype for an Awesome Startup employee directory.
 
