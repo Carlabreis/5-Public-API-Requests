@@ -1,19 +1,33 @@
 const gallery = document.getElementById("gallery");
 const body = document.querySelector("body");
+const searchInput = document.getElementById("search-input");
 
 let employees = [];
 
-function getEmployeesData(url) {
-  fetch(url)
-    .then((res) => res.json())
-    // .then(data => console.log(data))
-    .then((data) => {
-      employees = data.results;
-      displayEmployees(employees);
-    })
-    // .then((data) => console.log(employees))
-    .catch((err) => console.log(err));
-}
+window.onload = () => {
+    const searchHTML = `
+    <form action="#" method="get">
+        <input type="search" id="search-input" class="search-input" placeholder="Search...">
+        <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+    </form>
+    `;
+    document.querySelector(".search-container").innerHTML = searchHTML;
+};
+
+//search input
+body.addEventListener("keyup", (e) => {
+    if (e.target.closest("#search-input")) {
+        let currentValue = e.target.value.toLowerCase();
+        let employees = document.querySelectorAll("h3.card-name");
+        employees.forEach(employee => {
+            if (employee.textContent.toLowerCase().includes(currentValue)) {
+                employee.parentNode.parentNode.style.display = 'flex';
+            } else {
+                employee.parentNode.parentNode.style.display = 'none';
+            }
+        })
+    }
+})
 
 gallery.addEventListener("click", (e) => {
   const card = e.target.closest(".card");
@@ -39,6 +53,18 @@ body.addEventListener("click", (e) => {
     modalContainer.remove();
   }
 });
+
+function getEmployeesData(url) {
+    fetch(url)
+      .then((res) => res.json())
+      // .then(data => console.log(data))
+      .then((data) => {
+        employees = data.results;
+        displayEmployees(employees);
+      })
+      // .then((data) => console.log(employees))
+      .catch((err) => console.log(err));
+  }
 
 function displayEmployees(data) {
   const galleryHTML = data
@@ -111,4 +137,4 @@ function showModal(employee) {
   body.insertAdjacentHTML("beforeend", modalHTML);
 }
 
-getEmployeesData("https://randomuser.me/api/?results=12");
+getEmployeesData("https://randomuser.me/api/?nat=us&results=12");
