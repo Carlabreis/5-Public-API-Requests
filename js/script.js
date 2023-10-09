@@ -1,70 +1,20 @@
 const gallery = document.getElementById("gallery");
 const body = document.querySelector("body");
-const searchInput = document.getElementById("search-input");
+let modalContainer;
 
 let employees = [];
 
-window.onload = () => {
-    const searchHTML = `
-    <form action="#" method="get">
-        <input type="search" id="search-input" class="search-input" placeholder="Search...">
-        <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
-    </form>
-    `;
-    document.querySelector(".search-container").innerHTML = searchHTML;
-};
-
-//search input
-body.addEventListener("keyup", (e) => {
-    if (e.target.closest("#search-input")) {
-        let currentValue = e.target.value.toLowerCase();
-        let employees = document.querySelectorAll("h3.card-name");
-        employees.forEach(employee => {
-            if (employee.textContent.toLowerCase().includes(currentValue)) {
-                employee.parentNode.parentNode.style.display = 'flex';
-            } else {
-                employee.parentNode.parentNode.style.display = 'none';
-            }
-        })
-    }
-})
-
-gallery.addEventListener("click", (e) => {
-  const card = e.target.closest(".card");
-  const nameTarget = card.querySelector("#name").textContent;
-
-  const employee = employees.find(
-    (employee) => employee.name.first + " " + employee.name.last === nameTarget
-  );
-
-  showModal(employee);
-});
-
-body.addEventListener("click", (e) => {
-  if (e.target.closest("#modal-close-btn")) {
-    const modalContainer = document.querySelector(".modal-container");
-    modalContainer.remove();
-  } else if (
-    e.target.closest(".modal-container") &&
-    !e.target.closest(".modal") &&
-    !e.target.closest(".modal-btn-container")
-  ) {
-    const modalContainer = document.querySelector(".modal-container");
-    modalContainer.remove();
-  }
-});
+const url = "https://randomuser.me/api/?nat=us&results=12";
 
 function getEmployeesData(url) {
-    fetch(url)
-      .then((res) => res.json())
-      // .then(data => console.log(data))
-      .then((data) => {
-        employees = data.results;
-        displayEmployees(employees);
-      })
-      // .then((data) => console.log(employees))
-      .catch((err) => console.log(err));
-  }
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      employees = data.results;
+      displayEmployees(employees);
+    })
+    .catch((err) => console.log(err));
+}
 
 function displayEmployees(data) {
   const galleryHTML = data
@@ -127,7 +77,6 @@ function showModal(employee) {
                 </div>
             </div>
 
-            //IMPORTANT: Below is only for exceeds tasks 
             <div class="modal-btn-container">
                 <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
                 <button type="button" id="modal-next" class="modal-next btn">Next</button>
@@ -135,6 +84,80 @@ function showModal(employee) {
         </div>
     `;
   body.insertAdjacentHTML("beforeend", modalHTML);
+
+  modalContainer = document.querySelector(".modal-container");
 }
 
-getEmployeesData("https://randomuser.me/api/?nat=us&results=12");
+/*
+ * EVENT LISTENERS
+ */
+
+window.onload = () => {
+  const searchHTML = `
+        <form action="#" method="get">
+            <input type="search" id="search-input" class="search-input" placeholder="Search...">
+            <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+        </form>
+        `;
+  document.querySelector(".search-container").innerHTML = searchHTML;
+};
+
+//search input
+body.addEventListener("keyup", (e) => {
+  if (e.target.closest("#search-input")) {
+    let currentValue = e.target.value.toLowerCase();
+    let employees = document.querySelectorAll("h3.card-name");
+    employees.forEach((employee) => {
+      if (employee.textContent.toLowerCase().includes(currentValue)) {
+        employee.parentNode.parentNode.style.display = "flex";
+      } else {
+        employee.parentNode.parentNode.style.display = "none";
+      }
+    });
+  }
+});
+
+//show modal on card click
+gallery.addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  const nameCard = card.querySelector("#name").textContent;
+
+  const employee = employees.find(
+    (employee) => employee.name.first + " " + employee.name.last === nameCard
+  );
+
+  showModal(employee);
+});
+
+/*
+ * modal next and prev button handlers
+ * modal close on close button and outside card click
+ */
+body.addEventListener("click", (e) => {
+  const nameModal = modalContainer.querySelector("#name").textContent;
+  const employee = employees.find(
+    (employee) => employee.name.first + " " + employee.name.last === nameModal
+  );
+
+  if (e.target.closest("#modal-next")) {
+    if (employees.indexOf(employee) < employees.length - 1) {
+      modalContainer.remove();
+      showModal(employees[employees.indexOf(employee) + 1]);
+    }
+  } else if (e.target.closest("#modal-prev")) {
+    if (employees.indexOf(employee) > 0) {
+      modalContainer.remove();
+      showModal(employees[employees.indexOf(employee) - 1]);
+    }
+  } else if (e.target.closest("#modal-close-btn")) {
+    modalContainer.remove();
+  } else if (
+    e.target.closest(".modal-container") &&
+    !e.target.closest(".modal") &&
+    !e.target.closest(".modal-btn-container")
+  ) {
+    modalContainer.remove();
+  }
+});
+
+getEmployeesData(url);
