@@ -122,31 +122,37 @@ body.addEventListener("keyup", (e) => {
 
 // Show modal on card click
 gallery.addEventListener("click", (e) => {
-  const card = e.target.closest(".card");
-  const nameCard = card.querySelector("#name").textContent;
+  if (e.target.closest(".card")) {
+    const card = e.target.closest(".card");
+    const nameCard = card.querySelector("#name").textContent;
 
-  const employee = employees.find(
-    (employee) => employee.name.first + " " + employee.name.last === nameCard
-  );
+    const employee = employees.find(
+      (employee) => employee.name.first + " " + employee.name.last === nameCard
+    );
 
-  showModal(employee);
+    showModal(employee);
+  }
+  
 });
 
 // Modal next and prev button handlers
 // Modal close on close button or outside card click
 body.addEventListener("click", (e) => {
-  const nameModal = modalContainer.querySelector("#name").textContent;
-  const employee = employees.find(
-    (employee) => employee.name.first + " " + employee.name.last === nameModal
-  );
-
   if (e.target.closest("#modal-next")) {
+    const nameModal = modalContainer.querySelector("#name").textContent;
+    const employee = employees.find(
+      (employee) => employee.name.first + " " + employee.name.last === nameModal
+    );
     // if current employee is not the last on the list, show next
     if (employees.indexOf(employee) < employees.length - 1) {
       modalContainer.remove();
       showModal(employees[employees.indexOf(employee) + 1]);
     }
   } else if (e.target.closest("#modal-prev")) {
+    const nameModal = modalContainer.querySelector("#name").textContent;
+    const employee = employees.find(
+      (employee) => employee.name.first + " " + employee.name.last === nameModal
+    );
     // if current employee is not the first on the list, show previous
     if (employees.indexOf(employee) > 0) {
       modalContainer.remove();
